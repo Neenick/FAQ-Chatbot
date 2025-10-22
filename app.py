@@ -4,8 +4,22 @@ from rag_engine import load_and_index_data, get_answer
 
 ## Streamlit UI (Running the App)
 
+# --- Helper Function for Stream Processing ---
 
-st.title("PixelPad FAQ Chatbot")
+# This generator function extracts only the 'answer' text from the LangChain stream
+# and yields it back to st.write_stream.
+def stream_rag_response(stream):
+    """Yields text chunks from the LangChain stream."""
+    for chunk in stream:
+        # LangChain stream yields dictionaries. We only want the text from the 'answer' key.
+        if "answer" in chunk:
+            yield chunk["answer"]
+
+# --- Streamlit UI Configuration ---
+st.set_page_config(page_title="Document Chatbot (RAG)")
+st.title("📚 PixelPad FAQ Chatbot")
+st.caption("Answers are restricted to the contents of the files in the 'docs/' folder.")
+
 
 # Initialize Chat History
 if "messages" not in st.session_state:
@@ -40,15 +54,16 @@ if prompt := st.chat_input("Ask a question about your documents..."):
 
     # 2. Get AI response using the RAG function
     with st.chat_message("assistant"):
-        with st.spinner("Searching documents..."):
-            
-            # The vectorstore from the cached function
-            vectorstore = load_and_index_data() 
-            
-            # The RAG chain logic from the `get_answer`
-            response_text = get_answer(vectorstore, prompt) 
-            
-            st.markdown(response_text)
+        
+        # 1. Get the raw stream generator from the RAG engine
+        raw_stream = get_answer(vectorstore, prompt)
+        
+        # 2. Process the stream using the helper function
+        text_stream = stream_rag_response(raw_stream)
+        
+        # 3. Use st.write_stream to display the text incrementally.
+        # It automatically returns the final accumulated string.
+        full_response = st.write_stream(text_stream)
 
     # 3. Add assistant response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": response_text})
+    st.session_state.messages.append({"role": "assistant", "content": full_response})

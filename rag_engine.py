@@ -84,7 +84,7 @@ def get_answer(vectorstore, question):
     retrieval_chain = create_retrieval_chain(retriever, document_chain)
 
     # 4. Invoke and Return
-    response = retrieval_chain.invoke({"input": question})
+    return retrieval_chain.stream({"input": question})
     
     # The following commented code can check the costs per prompt in the terminal
     # with get_openai_callback() as cb:
