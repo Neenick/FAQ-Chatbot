@@ -56,8 +56,9 @@ def get_answer(vectorstore, question):
      """
      You are a helpful assistant for question-answering tasks.
      Answer the user's question **ONLY** based on the following context.
+     Do not use any external or general knowledge.
      
-     **If the answer is not present in the context, you must respond with:**
+     **If the answer is not present in the provided context, you must respond with:**
      'Sorry, I cannot answer your question. Please ask a different question or give us a call.'
      
      Context:
@@ -75,25 +76,4 @@ def get_answer(vectorstore, question):
     return response["answer"]
 
 
-## Streamlit UI (Running the App)
 
-st.title("Document Q&A Chatbot")
-
-# Load the data using the cached function
-# This runs once on app startup.
-try:
-    vectorstore = load_and_index_data()
-except Exception as e:
-    st.error(f"Error loading data or embeddings. Check your API key and 'docs' folder. Error: {e}")
-    st.stop()
-
-
-# User Input
-user_input = st.text_input("Ask a question about your documents:")
-
-if user_input:
-    # Get the answer and display it
-    with st.spinner("Searching and generating answer..."):
-        answer = get_answer(vectorstore, user_input)
-        st.write("### Answer:")
-        st.write(answer)
