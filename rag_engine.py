@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_classic.chains.retrieval import create_retrieval_chain
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_text_splitters import CharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -13,28 +13,39 @@ from langchain_community.callbacks import get_openai_callback
 
 
 
-# 1. Caching Function (The "Heavy Lifting")
-@st.cache_resource
+@st.cache_resource # To cache the result
 def load_and_index_data():
     """
     Loads documents, splits them, creates embeddings, and builds the FAISS index.
-    This function runs only once due to st.cache_resource.
+    This function runs only once due to Streamlit's cache mechanism.
     """
-    load_dotenv() 
+    # Load environment variables
+    load_dotenv()
     
-    # Data Loading and Splitting
+    # 1. Data Loading and Splitting
     docs = []
-    # Note: Use RecursiveCharacterTextSplitter for better results usually.
-    text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50) 
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50) 
     
-    for filename in os.listdir("docs"):
+    # Ensure the 'docs' folder exists
+    doc_path = "docs"
+    if not os.path.exists(doc_path):
+        raise FileNotFoundError(f"The directory '{doc_path}' was not found. Please create it and add your .txt files.")
+    
+    for filename in os.listdir(doc_path):
         if filename.endswith(".txt"):
-            with open(os.path.join("docs", filename), "r", encoding="utf-8") as f:
-                text = f.read()
-                chunks = text_splitter.split_text(text)
-                docs.extend(chunks)
+            file_path = os.path.join(doc_path, filename)
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    text = f.read()
+                    chunks = text_splitter.split_text(text)
+                    docs.extend(chunks)
+            except Exception as e:
+                print(f"Error processing file {filename}: {e}")
 
-    # Embedding and Indexing
+    if not docs:
+        raise ValueError("No text chunks were created. Check if your .txt files have content.")
+
+    # 2. Embedding and Indexing
     embeddings = OpenAIEmbeddings()
     vectorstore = FAISS.from_texts(texts=docs, embedding=embeddings)
     
@@ -49,7 +60,7 @@ def get_answer(vectorstore, question):
     retriever = vectorstore.as_retriever()
 
     # 2. Setup LLM
-    llm = ChatOpenAI(model="gpt-3.5-nano", temperature=0)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
 
     # 3. Define Prompt and Chains
     prompt = ChatPromptTemplate.from_messages([
