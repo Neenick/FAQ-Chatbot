@@ -1,3 +1,7 @@
+import os
+import streamlit as st
+from dotenv import load_dotenv
+
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_classic.chains.retrieval import create_retrieval_chain
 from langchain_core.prompts import ChatPromptTemplate
@@ -6,61 +10,90 @@ from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 
-import os
-import faiss
-import numpy as np
-from dotenv import load_dotenv
-from openai import OpenAI
 
-docs = []
-text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 
-for filename in os.listdir("docs"):
-    if filename.endswith(".txt"):
-        with open(os.path.join("docs", filename), "r", encoding="utf-8") as f:
-            text = f.read()
-            chunks = text_splitter.split_text(text)
-            docs.extend(chunks)
+# 1. Caching Function (The "Heavy Lifting")
+@st.cache_resource
+def load_and_index_data():
+    """
+    Loads documents, splits them, creates embeddings, and builds the FAISS index.
+    This function runs only once due to st.cache_resource.
+    """
+    load_dotenv() 
+    
+    # Data Loading and Splitting
+    docs = []
+    # Note: Use RecursiveCharacterTextSplitter for better results usually.
+    text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50) 
+    
+    for filename in os.listdir("docs"):
+        if filename.endswith(".txt"):
+            with open(os.path.join("docs", filename), "r", encoding="utf-8") as f:
+                text = f.read()
+                chunks = text_splitter.split_text(text)
+                docs.extend(chunks)
 
-load_dotenv() # Loads API key from .env
-api_key = os.getenv("OPENAI_API_KEY")
+    # Embedding and Indexing
+    embeddings = OpenAIEmbeddings()
+    vectorstore = FAISS.from_texts(texts=docs, embedding=embeddings)
+    
+    return vectorstore
 
-client = OpenAI(api_key=api_key)
+# 2. Main Retrieval Function
+def get_answer(vectorstore, question):
+    """
+    Sets up the RAG chain and executes the query.
+    """
+    # 1. Setup Retriever
+    retriever = vectorstore.as_retriever()
 
-# Initialize the embeddings (using the API key already loaded)
-embeddings = OpenAIEmbeddings()
+    # 2. Setup LLM
+    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
-# Create the FAISS Vector Store from your document chunks
-vectorstore = FAISS.from_texts(
-    texts=docs, 
-    embedding=embeddings
-)
-print("FAISS Index created and stored in 'vectorstore' variable.")
-
-# Convert the vector store into a retriever object
-retriever = vectorstore.as_retriever()
-print("Vector Store converted to a Retriever.")
-
-# Initialize the LLM
-llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
-
-# Define the Prompt Template (System Prompt)
-prompt = ChatPromptTemplate.from_messages([
-    ("system", "You are an assistant for question-answering tasks. Use the following context to answer the user's question:\n\n{context}"),
+    # 3. Define Prompt and Chains
+    prompt = ChatPromptTemplate.from_messages([
+    ("system", 
+     """
+     You are a helpful assistant for question-answering tasks.
+     Answer the user's question **ONLY** based on the following context.
+     
+     **If the answer is not present in the context, you must respond with:**
+     'Sorry, I cannot answer your question. Please ask a different question or give us a call.'
+     
+     Context:
+     {context}
+     """
+    ),
     ("user", "{input}"),
 ])
 
-# Create the document combining chain
-document_chain = create_stuff_documents_chain(llm, prompt)
+    document_chain = create_stuff_documents_chain(llm, prompt)
+    retrieval_chain = create_retrieval_chain(retriever, document_chain)
 
-# Create the full retrieval chain (Retriever + Document Chain)
-retrieval_chain = create_retrieval_chain(retriever, document_chain)
+    # 4. Invoke and Return
+    response = retrieval_chain.invoke({"input": question})
+    return response["answer"]
 
-# Ask for input
-input_question = input("How can I help you?\n\n")
 
-# Run a query against your indexed documents
-response = retrieval_chain.invoke({"input": input_question})
+## Streamlit UI (Running the App)
 
-# Print the final answer
-print("\n" + response["answer"])
+st.title("Document Q&A Chatbot")
+
+# Load the data using the cached function
+# This runs once on app startup.
+try:
+    vectorstore = load_and_index_data()
+except Exception as e:
+    st.error(f"Error loading data or embeddings. Check your API key and 'docs' folder. Error: {e}")
+    st.stop()
+
+
+# User Input
+user_input = st.text_input("Ask a question about your documents:")
+
+if user_input:
+    # Get the answer and display it
+    with st.spinner("Searching and generating answer..."):
+        answer = get_answer(vectorstore, user_input)
+        st.write("### Answer:")
+        st.write(answer)
