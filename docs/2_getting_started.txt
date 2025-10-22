@@ -1,0 +1,49 @@
+PixelPad Tablet – Getting Started / Setup
+
+Welcome to your new PixelPad Tablet! Follow these instructions carefully to ensure a smooth first-time setup and optimal use of your device.
+
+1. Unboxing and Initial Inspection:
+   - Remove the tablet and all included accessories from the packaging.
+   - Ensure the following items are present: PixelPad Tablet, USB-C charging cable, power adapter, Quick Start Guide, and stylus (if included in your model).
+   - Inspect the device for any physical damage. Contact support if anything appears damaged or missing.
+
+2. Charging the Tablet:
+   - Connect the USB-C charging cable to the tablet and plug the other end into the power adapter.
+   - Plug the adapter into a wall outlet.
+   - Charge the tablet fully before first use (approximately 3 hours) for optimal battery calibration.
+   - A full charge ensures longer battery lifespan and accurate battery percentage readings.
+
+3. Powering On:
+   - Press and hold the top power button for 3 seconds.
+   - Wait for the PixelPad logo to appear and the setup wizard to begin.
+
+4. Initial Setup Wizard:
+   - **Language Selection:** Choose your preferred language.
+   - **Wi-Fi Connection:** Select your Wi-Fi network and enter the password. Ensure a stable internet connection.
+   - **Sign In / Account Setup:**  
+     - Sign in with an existing PixelPad account, Google account, or create a new account.  
+     - The account enables cloud backup, AI note synchronization, and access to app store features.
+   - **Software Updates:** The tablet will check for updates and install the latest OS version if available. This ensures security and optimal performance.
+
+5. Personalization:
+   - Set your preferred time zone, date, and time.
+   - Configure a security method: PIN, password, or fingerprint (if supported).
+   - Choose your default apps and home screen layout.
+
+6. Connecting Accessories:
+   - **Stylus:** Pair via Bluetooth. Press and hold the stylus power button until it appears in the device’s Bluetooth settings. Test the stylus in the Notes app.
+   - **Keyboard:** Pair via Bluetooth following the same steps. Check battery levels and function keys.
+   - **Optional peripherals:** Headphones, external drives, or monitors can be connected via USB-C or Bluetooth.
+
+7. Exploring the PixelPad Assistant:
+   - Open the PixelPad Assistant app to set up AI note-taking features.
+   - Run the tutorial to understand how to scan documents, create summaries, and organize notes.
+   - Enable voice commands if desired for hands-free operation.
+
+8. Final Tips:
+   - Keep your tablet software updated to ensure you receive the latest features and security patches.
+   - Use the included Quick Start Guide for troubleshooting minor issues.
+   - Familiarize yourself with gestures and shortcuts to maximize productivity.
+
+Summary:
+Setting up your PixelPad Tablet is straightforward if you follow these steps. Charge fully, power on, connect to Wi-Fi, sign in to your account, pair accessories, and explore the AI productivity tools. You are now ready to take full advantage of your PixelPad Tablet!

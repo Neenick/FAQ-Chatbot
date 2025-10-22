@@ -1,0 +1,50 @@
+PixelPad Tablet – Troubleshooting Common Issues
+
+This guide helps you resolve common problems with your PixelPad Tablet quickly and effectively. Follow the steps below before contacting support.
+
+1. Tablet Not Turning On:
+- Ensure the tablet is fully charged using the provided USB-C cable and adapter.
+- Press and hold the power button for at least 5–10 seconds.
+- If the device still does not power on, try a different wall outlet or charging cable.
+- As a last resort, perform a forced restart by holding both the power button and volume up button for 15 seconds.
+
+2. Wi-Fi Connectivity Issues:
+- Check that Wi-Fi is enabled on the tablet.
+- Restart your router and reconnect to the network.
+- Forget the network on your tablet and reconnect with the correct password.
+- Ensure your router firmware is up to date.
+
+3. AI Note-Taking Not Working:
+- Verify that the PixelPad Assistant app is updated to the latest version.
+- Ensure a stable internet connection.
+- Restart the app and try again.
+- Clear the app cache if issues persist.
+
+4. Stylus or Keyboard Not Responding:
+- Ensure the device is charged or has fresh batteries.
+- Re-pair the device via Bluetooth.
+- Test the accessory on another compatible device to ensure it’s functioning properly.
+- Restart the tablet and try pairing again.
+
+5. Slow Performance or Freezing:
+- Close unused apps running in the background.
+- Restart the tablet to clear memory.
+- Check for available software updates and install them.
+- Reset to factory settings only if all else fails, and back up your data beforehand.
+
+6. Screen or Display Issues:
+- Clean the screen with a soft, dry cloth.
+- Adjust brightness and display settings in the system settings.
+- Restart the tablet if display flickers or touch input is unresponsive.
+
+7. Other Issues:
+- If the problem persists after following the above steps, contact PixelPad Support for assistance.
+
+**Contacting Support:**
+- Email: support@pixelpad.com
+- Phone: +31 800 555 1234 (Mon–Fri, 9AM–5PM CET)
+- Live Chat: Available via PixelPad Assistant app
+- Help Center: www.pixelpad.com/help
+
+Summary:
+Most common issues can be resolved by following these troubleshooting steps. Restarting the device, checking connections, and updating software solve the majority of problems. If issues continue, PixelPad Support is available to assist you.
