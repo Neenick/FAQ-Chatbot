@@ -9,6 +9,7 @@ from langchain_text_splitters import CharacterTextSplitter
 from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
+from langchain_community.callbacks import get_openai_callback
 
 
 
@@ -48,7 +49,7 @@ def get_answer(vectorstore, question):
     retriever = vectorstore.as_retriever()
 
     # 2. Setup LLM
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+    llm = ChatOpenAI(model="gpt-3.5-nano", temperature=0)
 
     # 3. Define Prompt and Chains
     prompt = ChatPromptTemplate.from_messages([
@@ -66,13 +67,18 @@ def get_answer(vectorstore, question):
      """
     ),
     ("user", "{input}"),
-])
+    ])
 
     document_chain = create_stuff_documents_chain(llm, prompt)
     retrieval_chain = create_retrieval_chain(retriever, document_chain)
 
     # 4. Invoke and Return
     response = retrieval_chain.invoke({"input": question})
+    
+    # The following commented code can check the costs per prompt in the terminal
+    # with get_openai_callback() as cb:
+    #    response = retrieval_chain.invoke({"input": question})
+    #    print(cb) # Uncomment to see cost in console
     return response["answer"]
 
 
