@@ -1,5 +1,4 @@
 import streamlit as st
-
 from rag_engine import load_and_index_data, get_answer
 
 ## Streamlit UI (Running the App)
@@ -29,12 +28,6 @@ if "messages" not in st.session_state:
     st.session_state.messages.append({"role": "assistant", "content": "Hey! I am your virtual PixelPad assistant. How can I help you?"})
 
 
-# Display existing messages from history
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-
 # Load the data using the cached function
 # This runs once on app startup.
 try:
@@ -43,9 +36,13 @@ except Exception as e:
     st.error(f"Error loading data or embeddings. Check the API key and 'docs' folder. Error: {e}")
     st.stop()
 
+# Display existing messages from history
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
 # Accept user input using the chat interface
-if prompt := st.chat_input("Ask a question about your documents..."):
+if prompt := st.chat_input("Ask a question about PixelPad..."):
     
     # 1. Add user message to chat history and display
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -55,15 +52,21 @@ if prompt := st.chat_input("Ask a question about your documents..."):
     # 2. Get AI response using the RAG function
     with st.chat_message("assistant"):
         
-        # 1. Get the raw stream generator from the RAG engine
+        # 1. Get the raw stream from the RAG engine
         raw_stream = get_answer(vectorstore, prompt)
         
-        # 2. Process the stream using the helper function
+        # 2. Filter the stream to get only the answer text generator
         text_stream = stream_rag_response(raw_stream)
         
-        # 3. Use st.write_stream to display the text incrementally.
-        # It automatically returns the final accumulated string.
+        # 3. Use st.write_stream to display the response token by token.
         full_response = st.write_stream(text_stream)
+        
 
     # 3. Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": full_response})
+
+def clear_history():
+    if "messages" in st.session_state:
+        del st.session_state['messages']
+
+st.sidebar.button("Clear Conversation", on_click=clear_history())
