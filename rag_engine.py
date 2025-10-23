@@ -1,6 +1,8 @@
 import os
+import random
 import streamlit as st
 from dotenv import load_dotenv
+
 
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_classic.chains.retrieval import create_retrieval_chain
@@ -11,7 +13,12 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_community.callbacks import get_openai_callback
 
-
+REFUSAL_MESSAGES = [
+    "Sorry, I cannot answer your question. Please ask a different question or give us a call.",
+    "I'm sorry, I couldn't find the information you need. Please ask a different question or call our support line.",
+    "I don't have enough knowledge to answer that question. Could you please try asking in a different way?",
+    "Apologies, but I cannot answer your question based on my current knowledge. Please ask me about another topic."
+]
 
 @st.cache_resource # To cache the result
 def load_and_index_data():
@@ -71,7 +78,7 @@ def get_answer(vectorstore, question):
      Do not use any external or general knowledge.
      
      **If the answer is not present in the provided context, you must respond with:**
-     'Sorry, I cannot answer your question. Please ask a different question or give us a call.'
+     '""" + random.choice(REFUSAL_MESSAGES) + """'
      
      Context:
      {context}
@@ -85,12 +92,6 @@ def get_answer(vectorstore, question):
 
     # 4. Invoke and Return
     return retrieval_chain.stream({"input": question})
-    
-    # The following commented code can check the costs per prompt in the terminal
-    # with get_openai_callback() as cb:
-    #    response = retrieval_chain.invoke({"input": question})
-    #    print(cb) # Uncomment to see cost in console
-    return response["answer"]
 
 
 

@@ -14,11 +14,16 @@ def stream_rag_response(stream):
         if "answer" in chunk:
             yield chunk["answer"]
 
+def clear_history():
+    if "messages" in st.session_state:
+        del st.session_state['messages']
+
 # --- Streamlit UI Configuration ---
 st.set_page_config(page_title="Document Chatbot (RAG)")
 st.title("📚 PixelPad FAQ Chatbot")
 st.caption("Answers are restricted to the contents of the files in the 'docs/' folder.")
 
+st.sidebar.button("Clear Conversation", on_click=clear_history, use_container_width=True)
 
 # Initialize Chat History
 if "messages" not in st.session_state:
@@ -64,9 +69,4 @@ if prompt := st.chat_input("Ask a question about PixelPad..."):
 
     # 3. Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": full_response})
-
-def clear_history():
-    if "messages" in st.session_state:
-        del st.session_state['messages']
-
-st.sidebar.button("Clear Conversation", on_click=clear_history())
+    
