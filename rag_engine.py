@@ -11,6 +11,7 @@ from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import MessagesPlaceholder
+from langchain_classic.chains.history_aware_retriever import create_history_aware_retriever
 
 
 REFUSAL_MESSAGES = [
@@ -69,6 +70,18 @@ def get_answer(vectorstore, question, chat_history):
     # 2. Setup LLM
     llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
 
+    retriever_prompt = ChatPromptTemplate.from_messages([
+        MessagesPlaceholder(variable_name="chat_history"),
+        ("human", "{input}"),
+        ("human", "Given the above conversation, generate a search query to look up in order to get information relevant to the conversation.")
+    ])
+
+    history_aware_retriever = create_history_aware_retriever(
+        llm=llm,
+        retriever=retriever,
+        prompt=retriever_prompt
+    )
+
     # 3. Define Prompt and Chains
     prompt = ChatPromptTemplate.from_messages([
     ("system", 
@@ -94,7 +107,8 @@ def get_answer(vectorstore, question, chat_history):
     ])
 
     document_chain = create_stuff_documents_chain(llm, prompt)
-    retrieval_chain = create_retrieval_chain(retriever, document_chain)
+
+    retrieval_chain = create_retrieval_chain(history_aware_retriever, document_chain)
 
     # 4. Invoke and Return
     return retrieval_chain.stream({"input": question,
