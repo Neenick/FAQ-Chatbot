@@ -3,7 +3,6 @@ import random
 import streamlit as st
 from dotenv import load_dotenv
 
-
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_classic.chains.retrieval import create_retrieval_chain
 from langchain_core.prompts import ChatPromptTemplate
@@ -11,7 +10,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain_community.callbacks import get_openai_callback
+from langchain_core.prompts import MessagesPlaceholder
+
 
 REFUSAL_MESSAGES = [
     "Sorry, I cannot answer your question. Please ask a different question or give us a call.",
@@ -59,7 +59,7 @@ def load_and_index_data():
     return vectorstore
 
 # 2. Main Retrieval Function
-def get_answer(vectorstore, question):
+def get_answer(vectorstore, question, chat_history):
     """
     Sets up the RAG chain and executes the query.
     """
@@ -74,16 +74,17 @@ def get_answer(vectorstore, question):
     ("system", 
      """
      You are a helpful assistant for question-answering tasks.
-     Answer the user's question **ONLY** based on the following context.
+     Answer the user's question **ONLY** based on the following context or the given chat history.
      Do not use any external or general knowledge.
      
-     **If the answer is not present in the provided context, you must respond with:**
+     **If the answer is not present in the provided context or chat history, you must respond with:**
      '""" + random.choice(REFUSAL_MESSAGES) + """'
      
      Context:
      {context}
      """
     ),
+    MessagesPlaceholder(variable_name="chat_history"),
     ("user", "{input}"),
     ])
 
@@ -91,7 +92,8 @@ def get_answer(vectorstore, question):
     retrieval_chain = create_retrieval_chain(retriever, document_chain)
 
     # 4. Invoke and Return
-    return retrieval_chain.stream({"input": question})
+    return retrieval_chain.stream({"input": question,
+                                   "chat_history": chat_history})
 
 
 
