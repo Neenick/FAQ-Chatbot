@@ -31,7 +31,7 @@ def load_and_index_data():
     
     # 1. Data Loading and Splitting
     docs = []
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50) 
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=50) 
     
     # Ensure the 'docs' folder exists
     doc_path = "docs"
@@ -73,16 +73,21 @@ def get_answer(vectorstore, question, chat_history):
     prompt = ChatPromptTemplate.from_messages([
     ("system", 
      """
-     You are a helpful assistant for question-answering tasks.
-     Answer the user's question **ONLY** based on the following context or the given chat history.
-     Do not use any external or general knowledge.
-     
-     **If the answer is not present in the provided context or chat history, you must respond with:**
-     '""" + random.choice(REFUSAL_MESSAGES) + """'
-     
-     Context:
-     {context}
-     """
+    You are a helpful, friendly assistant for customer support about PixelPad.
+
+    You have two modes of response:
+    1. **Knowledge Mode** — When the user's question is about the product or something factual,
+       answer **only** using the provided context or chat history. 
+       If the answer cannot be found there, respond with:
+       '""" + random.choice(REFUSAL_MESSAGES) + """'
+
+    2. **Conversational Mode** — If the user says something conversational (like greetings,
+       self-introductions such as "My name is Leon", or small talk like "How are you?"),
+       respond politely and naturally as a human would, but do NOT provide factual or external information.
+
+    Context:
+    {context}
+    """
     ),
     MessagesPlaceholder(variable_name="chat_history"),
     ("user", "{input}"),
@@ -94,6 +99,3 @@ def get_answer(vectorstore, question, chat_history):
     # 4. Invoke and Return
     return retrieval_chain.stream({"input": question,
                                    "chat_history": chat_history})
-
-
-
