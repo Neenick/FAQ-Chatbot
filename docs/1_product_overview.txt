@@ -1,6 +1,21 @@
-PixelPad Tablet – Product Overview
+Product Overview
 
-The PixelPad Tablet is a high-performance, lightweight tablet designed for students, professionals, and creative users who need portability without sacrificing functionality. Combining cutting-edge hardware with AI-powered productivity features, the PixelPad offers a seamless digital experience for work, study, and entertainment.
+We currently sell one product: The PixelPad Tablet. It is a high-performance, lightweight device designed for students, professionals, and creative users who need portability without sacrificing functionality.
+
+The PixelPad product is available in two models:
+- **Standard Model (64GB storage):**
+  - Price: €399
+  - Ideal for students or casual users
+  - Includes AI note-taking and productivity apps
+  - Color options: Silver, Space Gray, Rose Gold
+
+- **Pro Model (128GB storage + extra AI features):**
+  - Price: €499
+  - Ideal for professionals, creatives, and power users
+  - Additional AI features include advanced note summarization, AI calendar assistant, and priority updates
+  - Color options: Silver, Space Gray
+
+Both models combine cutting-edge hardware with AI-powered productivity features to deliver a seamless digital experience for work, study, and entertainment.
 
 Key Features:
 
